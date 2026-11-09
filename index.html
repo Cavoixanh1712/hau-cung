@@ -726,7 +726,53 @@ body:has(.compact-home) .compact-home .dev-grid{overflow:visible!important}
  body:has(.compact-home) main{padding:8px 9px calc(165px + env(safe-area-inset-bottom))!important}
 }
 </style>
-</head><body><div class="shell appshell"><main><div id="content"></div></main><aside class="bottomnav"><nav id="nav"><button data-page="home" class="active"><span>♛</span> NV chính</button><button data-page="palace"><span>⌂</span> Hoàng cung</button><button data-page="bag"><span>◈</span> Túi đồ</button><button data-page="business"><span>🪙</span> Kinh doanh</button><button data-page="relations"><span>♡</span> Quan hệ</button></nav><div class="navtools"><button class="btn small alt" id="save" title="Lưu tiến trình và tải tệp lưu về máy">Lưu game</button><button class="btn small alt" id="load" title="Tải bản lưu trên trình duyệt">Tải nhanh</button><button class="btn small alt" id="import" title="Mở tệp lưu từ thiết bị">Nhập file</button><input id="savefile" type="file" accept=".json,application/json" style="display:none"><button class="btn small alt" id="new">Mới</button><span id="save-status" class="save-status" aria-live="polite">Tự lưu: đang kiểm tra</span></div></aside></div><div id="overlay" class="modalback" style="display:none"></div><div id="toast" class="notice" style="display:none"></div><script>
+
+<style id="home-wheel-scroll-fix-v43">
+/* v4.3: leave room for the two-row fixed navbar; scroll the document, not a clipped panel */
+html:has(#content>.compact-home), body:has(#content>.compact-home){
+ height:auto!important;min-height:100%!important;overflow-x:clip!important;overflow-y:auto!important;
+}
+body:has(#content>.compact-home) .shell.appshell{
+ height:auto!important;min-height:100dvh!important;max-height:none!important;overflow:visible!important;
+}
+body:has(#content>.compact-home) main{
+ height:auto!important;min-height:calc(100dvh + 125px)!important;max-height:none!important;
+ overflow:visible!important;display:block!important;
+ padding:14px 14px calc(245px + env(safe-area-inset-bottom))!important;
+}
+body:has(#content>.compact-home) #content,
+body:has(#content>.compact-home) #content>.compact-home{
+ height:auto!important;max-height:none!important;min-height:0!important;
+ overflow:visible!important;position:relative!important;
+}
+body:has(#content>.compact-home) .main-dashboard,
+body:has(#content>.compact-home) .compact-progress,
+body:has(#content>.compact-home) .dev-grid{
+ height:auto!important;max-height:none!important;overflow:visible!important;
+}
+body:has(#content>.compact-home) .bottomnav{z-index:40}
+@media(max-width:700px){
+ body:has(#content>.compact-home) main{
+   padding:12px 9px calc(255px + env(safe-area-inset-bottom))!important;
+   min-height:calc(100dvh + 145px)!important;
+ }
+}
+</style>
+</head><body><div class="shell appshell"><main><div id="content"></div></main><aside class="bottomnav"><nav id="nav"><button data-page="home" class="active"><span>♛</span> NV chính</button><button data-page="palace"><span>⌂</span> Hoàng cung</button><button data-page="bag"><span>◈</span> Túi đồ</button><button data-page="business"><span>🪙</span> Kinh doanh</button><button data-page="relations"><span>♡</span> Quan hệ</button></nav><div class="navtools"><button class="btn small alt" id="save" title="Lưu tiến trình và tải tệp lưu về máy">Lưu game</button><button class="btn small alt" id="load" title="Tải bản lưu trên trình duyệt">Tải nhanh</button><button class="btn small alt" id="import" title="Mở tệp lưu từ thiết bị">Nhập file</button><input id="savefile" type="file" accept=".json,application/json" style="display:none"><button class="btn small alt" id="new">Mới</button><span id="save-status" class="save-status" aria-live="polite">Tự lưu: đang kiểm tra</span></div></aside></div><div id="overlay" class="modalback" style="display:none"></div><div id="toast" class="notice" style="display:none"></div><script id="game-crash-guard">
+(function(){
+function report(msg){
+ if(document.getElementById('game-crash-notice'))return;
+ var e=document.createElement('div');e.id='game-crash-notice';
+ e.style.cssText='position:fixed;inset:12px;z-index:999999;background:#fff9f2;color:#713b36;border:2px solid #b98d6a;border-radius:16px;padding:25px;overflow:auto;font:16px/1.6 system-ui';
+ var h=document.createElement('h2');h.textContent='Game không thể khởi động';e.appendChild(h);
+ var p=document.createElement('p');p.textContent='Lỗi kỹ thuật: '+String(msg).slice(0,700);e.appendChild(p);
+ var q=document.createElement('p');q.textContent='Hãy chụp màn hình thông báo này để tôi sửa chính xác. Đừng xóa dữ liệu trình duyệt vì có thể mất tiến trình.';e.appendChild(q);
+ document.body.appendChild(e);
+}
+window.addEventListener('error',function(ev){if(ev.message)report(ev.message)});
+window.addEventListener('unhandledrejection',function(ev){report(ev.reason && (ev.reason.message||String(ev.reason))||'Lỗi không xác định')});
+})();
+</script><script>
 (()=>{'use strict';let lastPalaceResult=null, palaceResultTimer=null;const $=id=>document.getElementById(id);const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));let s=null,page='home',currentEvent=null;let rng=123456789;function rnd(){rng^=rng<<13;rng^=rng>>>17;rng^=rng<<5;return(rng>>>0)/4294967296}function pick(a){return a[Math.floor(rnd()*a.length)]}function escapeHTML(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}let toastTimeout;function toast(t){$('toast').textContent=t;$('toast').style.display='block';clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>$('toast').style.display='none',3000)}function floatGain(t){document.querySelectorAll('.floating-gain').forEach(el=>el.remove());const el=document.createElement('div');el.className='floating-gain';el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.remove(),1500)}
 
 function transactionSnapshot(){
@@ -1246,7 +1292,7 @@ if(a==='exam'){beginExam();return}if(a.startsWith('career:')){doCareer(a.slice(7
  if(!s)return false;
  const indicator=$('save-status');
  try{
-  localStorage.setItem('HCTQ_App_02',JSON.stringify({version:'4.2',savedAt:new Date().toISOString(),s,rng}));
+  localStorage.setItem('HCTQ_App_02',JSON.stringify({version:'4.3',savedAt:new Date().toISOString(),s,rng}));
   if(indicator)indicator.textContent='● Đã tự lưu';
   return true;
  }catch(err){
@@ -1266,7 +1312,7 @@ function restoreOnLaunch(){
 }
 function save(){
  if(!s)return toast('Chưa có ván chơi để lưu');
- const data=JSON.stringify({version:'4.2',savedAt:new Date().toISOString(),s,rng});
+ const data=JSON.stringify({version:'4.3',savedAt:new Date().toISOString(),s,rng});
  try{localStorage.setItem('HCTQ_App_02',data)}catch(err){}
  try{
   let blob=new Blob([data],{type:'application/json;charset=utf-8'});
